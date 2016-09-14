@@ -1,0 +1,74 @@
+The Oak and the Reed
+Fault Tolerance, Configurable Services, and API Design
+
+Aidan Coyle
+Services Team
+acoyle@enova.com
+
+* Let's talk about Portfolio
+
+Specifically creating a loan application
+
+* What's the process?
+
+Client POSTs Request:  `accounts/:account_id/loan_applications`
+
+Portfolio collects inputs
+
+- Credit Reports
+- Fraud checks (Cashew, Watchlist, etc.)
+- Other info (source, loan amt, etc.)
+
+Portfolio runs a model in Colossus
+
+Portfolio returns something based on the result
+
+* What are the pain points?
+
+Failures terminate the process
+
+Dependencies are hardcoded
+
+* Let's talk about Actuary
+
+Actuary runs analyses in response to events
+
+Analysis data flow with three fundamental steps
+
+- Research: collecting inputs from APIs and given data
+- Calculation: running a Colossus model with those inputs
+- Publication: POST results to callbacks
+
+Seems familiar?
+
+* Configurable Data Model
+
+Events
+
+- Something that might cause us to want to run an analysis
+- e.g. 'someone signed a contract'
+
+Analyses
+
+- Configured per tenant to be run in response to an Event
+- Maps a collection of Variables to inputs to a Colossus model
+
+Variables
+
+- A single value and a source from which to fetch it
+- e.g. first_name: '{+account_url}#/first_name'
+- Forms a dependency chain
+
+* Fault Tolerance
+
+Tolerant to issues with variables
+
+- Events missing necessary variables for the analysis
+- Variables failing during the research step
+
+Tolerant to ephemeral failures
+
+- Retries calculation and publication in case of network issues
+- Saves results for future access
+
+* The Oak and the Reed
